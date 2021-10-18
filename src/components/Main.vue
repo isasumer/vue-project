@@ -4,19 +4,21 @@
     <p class="lead">
       Hızını test et
     </p>
-    <div>Doğru Sayısı: {{ trueCount }}</div>
-    <div>Yanlış Sayısı: {{ falseCount }}</div>
     <hr class="my-4" />
     <div v-if="isFinish" class="alert alert-primary">
-      <h1>
+      <h3>
         Oyun Bitti
-      </h1>
+      </h3>
+      <p class="display-4">{{ yks }} Yazılan kelime</p>
+      <div>Doğruluk Yüzdesi: % {{ truePercent }}</div>
+      <div>Doğru Sayısı: {{ trueCount }}</div>
+      <div>Yanlış Sayısı: {{ falseCount }}</div>
     </div>
     <div v-else>
       <div class="card">
         <div class="card-body">
           <span
-            v-for="(word, key) in words"
+            v-for="(word, key) in words.filter((data, index) => index < 15)"
             :key="key"
             v-bind:class="key != 0 || writingWordControl"
             class="words"
@@ -32,7 +34,12 @@
               <button class="btn btn-outline-secondary" disabled type="button">
                 {{ timer }} sn
               </button>
-              <button class="btn btn-outline-secondary" type="button">
+              <button
+                :disabled="isRunning"
+                class="btn btn-outline-secondary"
+                type="button"
+                @click="getWords"
+              >
                 Yenile
               </button>
             </div>
@@ -44,23 +51,29 @@
 </template>
 
 <script>
+import data from "../assets/data.json";
 export default {
   data() {
     return {
-      words: ["isa", "sumer", "vscode", "msi", "vue.js"],
+      words: [],
       writingWord: null,
       isTrue: true,
       trueCount: 0,
       falseCount: 0,
-      timer: 5,
+      timer: 10,
       interval: false,
       isRunning: false,
-      isFinish: false
+      isFinish: false,
+      wordList: data
     };
   },
 
   watch: {
     writingWord(val) {
+      if (!val || val === " ") {
+        this.writingWord = "";
+        return;
+      }
       !this.isRunning && this.toggleTimer();
       const word = this.words[0].slice(0, val.length);
       const userWord = val.replace(" ", "");
@@ -70,16 +83,32 @@ export default {
         this.isTrue ? this.trueCount++ : this.falseCount++;
         this.words.splice(0, 1);
         this.writingWord = "";
+        this.isTrue = true;
       }
     }
   },
+
   computed: {
     writingWordControl() {
       return this.isTrue ? "first-word" : "first-word bg-danger";
+    },
+    yks() {
+      const yks = 300 - this.words.length;
+      return yks;
+    },
+    truePercent() {
+      const percent = (this.trueCount / this.yks) * 100;
+      return percent;
     }
+  },
+  mounted() {
+    this.getWords();
   },
 
   methods: {
+    getWords() {
+      this.words = this.wordList.sort(() => Math.random() - 0.5).splice(0, 300);
+    },
     toggleTimer() {
       this.isRunning = true;
       this.interval = setInterval(this.timeProcess, 1000);
