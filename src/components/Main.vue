@@ -13,6 +13,9 @@
       <div>Doğruluk Yüzdesi: % {{ truePercent }}</div>
       <div>Doğru Sayısı: {{ trueCount }}</div>
       <div>Yanlış Sayısı: {{ falseCount }}</div>
+      <button @click="newGame" class="btn btn-success btn-lg btn-block mt-5">
+        YENİ OYUN
+      </button>
     </div>
     <div v-else>
       <div class="card">
@@ -60,7 +63,7 @@ export default {
       isTrue: true,
       trueCount: 0,
       falseCount: 0,
-      timer: 10,
+      timer: 60,
       interval: false,
       isRunning: false,
       isFinish: false,
@@ -98,7 +101,8 @@ export default {
     },
     truePercent() {
       const percent = (this.trueCount / this.yks) * 100;
-      return percent;
+
+      return isNaN(percent) ? 0 : percent;
     }
   },
   mounted() {
@@ -106,6 +110,15 @@ export default {
   },
 
   methods: {
+    newGame() {
+      this.getWords(),
+        (this.isFinish = false),
+        (this.timer = 60),
+        (this.isTrue = true),
+        (this.isRunning = false),
+        (this.trueCount = 0),
+        (this.falseCount = 0);
+    },
     getWords() {
       this.words = this.wordList.sort(() => Math.random() - 0.5).splice(0, 300);
     },
