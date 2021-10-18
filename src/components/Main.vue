@@ -2,7 +2,7 @@
   <div class="container jumbotron bg-info">
     <h1 class="display-4">Hello, Hızlı Yazma Yarışmasına Hoş Geldiniz!!</h1>
     <p class="lead">
-      Hızını test et
+      Klavye yazma hızıını test et
     </p>
     <hr class="my-4" />
     <div v-if="isFinish" class="alert alert-primary">
